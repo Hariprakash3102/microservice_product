@@ -9,5 +9,7 @@ namespace microservice.product.Application.Interface
 {
     public  interface IProductRepository : IGenericRepository<ProductModel>
     {
+        //Task<List<ProductModel>> GetByOrder();
+         
     }
 }

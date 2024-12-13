@@ -12,7 +12,6 @@ namespace microservice.product.Infrastructure.UnitOfWork
     public class UnitOfWork(ProductDbContext dbContext) : IUnitOfWork
     {
         private readonly ProductDbContext dbContext = dbContext;
-
         public IProductRepository Product { get; private set; } = new ProductRepository(dbContext);
 
         public void Dispose()

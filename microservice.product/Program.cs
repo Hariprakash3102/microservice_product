@@ -2,6 +2,7 @@ using microservice.product.Application.Interface;
 using microservice.product.Application.Mapper;
 using microservice.product.Infrastructure.Data;
 using microservice.product.Infrastructure.Repository;
+using microservice.product.Infrastructure.Service;
 using microservice.product.Infrastructure.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,7 +21,11 @@ builder.Services.AddAutoMapper(typeof(ProductMapper));
 
 builder.Services.AddTransient(typeof(IGenericRepository<>), typeof(GenericRepositoy<>));
 
+builder.Services.AddScoped<IProductCustomerService, ProductCustomerService>();
+
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+builder.Services.AddHttpClient("Customer" , options => options.BaseAddress = new Uri("https://localhost:7225/api/"));
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi

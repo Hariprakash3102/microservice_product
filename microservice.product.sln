@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35527.113 d17.12
+VisualStudioVersion = 17.12.35527.113
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "microservice.product.API", "microservice.product\microservice.product.API.csproj", "{AA8F4A5D-5673-4AFB-950A-3FF5C93E9878}"
 EndProject
@@ -10,6 +10,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "microservice.product.Infrastructure", "microservice.product.Infrastructure\microservice.product.Infrastructure.csproj", "{D7E915D8-3AB1-4193-827B-0E4BD8E89ADA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "microservice.product.Application", "microservice.product.Application\microservice.product.Application.csproj", "{76F23CF5-E37B-4953-9C3C-57941CBC7AF5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API GateWay", "API GateWay\API GateWay.csproj", "{E4F09BBF-E36A-4E87-9A59-4D6569D2B2A3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{76F23CF5-E37B-4953-9C3C-57941CBC7AF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{76F23CF5-E37B-4953-9C3C-57941CBC7AF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{76F23CF5-E37B-4953-9C3C-57941CBC7AF5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E4F09BBF-E36A-4E87-9A59-4D6569D2B2A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E4F09BBF-E36A-4E87-9A59-4D6569D2B2A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E4F09BBF-E36A-4E87-9A59-4D6569D2B2A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E4F09BBF-E36A-4E87-9A59-4D6569D2B2A3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

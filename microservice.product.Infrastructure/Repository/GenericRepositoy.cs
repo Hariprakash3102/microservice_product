@@ -37,6 +37,6 @@ namespace microservice.product.Infrastructure.Repository
         public void Update(T entity)
         {
             dbContext.Set<T>().Update(entity);
-        }
+        }         
     }
 }
