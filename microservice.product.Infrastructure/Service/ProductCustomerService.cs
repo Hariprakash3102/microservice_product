@@ -1,18 +1,30 @@
 ﻿using microservice.product.Application.DTO;
-using microservice.product.Application.Interface;
-using System.Net.Http.Json;
-namespace microservice.product.Infrastructure.Service
-{
-    public class ProductCustomerService(IHttpClientFactory httpClient) : IProductCustomerService
-    {
-        public async Task<List<CustomerDTO>> GetProductCustomer()
-        {
-            var client = httpClient.CreateClient("Customer");
-            var CustomerResponse = await client.GetFromJsonAsync<List<CustomerDTO>>("Customer");
-            return CustomerResponse!;
-        }
-    }
-}
+//using microservice.product.Application.Interface;
+//using System.Net.Http.Json;
+//namespace microservice.product.Infrastructure.Service
+//{
+//    public class ProductCustomerService(IHttpClientFactory httpClient) : IProductCustomerService
+//    {
+//        private readonly HttpClient client = httpClient.CreateClient("Customer");
+//        public async Task<List<CustomerDTO>> GetProductCustomer()
+//        {
+//            var CustomerResponse = await client.GetFromJsonAsync<List<CustomerDTO>>("Customer");
+//            return CustomerResponse!;
+//        }
+
+//        public async Task<CustomerDTO> GetProductCustomerById(int id)
+//        {
+//            var CustomerById = await client.GetFromJsonAsync<CustomerDTO>($"Customer/{id}");
+//            return CustomerById!;
+//        }
+
+//        public async void DeleteCustomer(int id)
+//        {
+//            await client.DeleteAsync($"Customer/{id}");
+
+//        }
+//    }
+//}
 
 //using microservice.product.Application.DTO;
 //using microservice.product.Application.Interface;

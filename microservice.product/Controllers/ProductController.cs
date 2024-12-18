@@ -3,21 +3,23 @@ using Azure;
 using microservice.product.Application.DTO;
 using microservice.product.Application.Interface;
 using microservice.product.domain.Model;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 using System.Text.Json;
 
 namespace microservice.product.API.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ProductController(IUnitOfWork _unitOfWork, IMapper mapper, IProductCustomerService ProductCustomer) : Controller
     {
-        private readonly IUnitOfWork unitOfWork = _unitOfWork;
 
         [HttpGet]
         public async Task<IActionResult> GetProduct()
         {
-            var response = await unitOfWork.Product.GetAll();
+            var response = await _unitOfWork.Product.GetAll();
             if (response == null)
                 return BadRequest();
 
@@ -29,7 +31,7 @@ namespace microservice.product.API.Controllers
         [HttpGet("{id}")]
         public  async Task<IActionResult> GetProductById(int id)
         {
-            var entity = await unitOfWork.Product.GetById(id);
+            var entity = await _unitOfWork.Product.GetById(id);
             if (entity == null)
                 return BadRequest();
 
@@ -47,16 +49,16 @@ namespace microservice.product.API.Controllers
         public async Task<IActionResult> AddProduct([FromBody] ProductDTO entity)
         {
             var data = mapper.Map <ProductModel>(entity);
-            await unitOfWork.Product.Add(data);
-            await unitOfWork.Save();
+            await _unitOfWork.Product.Add(data);
+            await _unitOfWork.Save();
             return Ok(data);
         }
 
         [HttpPut]
         public async Task<IActionResult> EditProduct([FromBody] ProductModel entity)
         {
-             unitOfWork.Product.Update(entity);
-            await unitOfWork.Save();
+            _unitOfWork.Product.Update(entity);
+            await _unitOfWork.Save();
             return Ok(entity);
         }
 
@@ -64,12 +66,12 @@ namespace microservice.product.API.Controllers
 
         public async Task<IActionResult> DeleteProduct(int id)
         {
-           await unitOfWork.Product.Delete(id);
-           await unitOfWork.Save();
+           await _unitOfWork.Product.Delete(id);
+           await _unitOfWork.Save();
            return Ok();
         }
 
-        [HttpGet("withCustomer")]
+        [HttpGet("GetByCustomer")]
         public async Task<IActionResult> GetByCustomer()
         {
             var response = await ProductCustomer.GetProductCustomer();
@@ -77,7 +79,7 @@ namespace microservice.product.API.Controllers
             {
                 return NotFound(new { Message = "No customer data found." });
             }
-            var ProductResponse = await unitOfWork.Product.GetAll();
+            var ProductResponse = await _unitOfWork.Product.GetAll();
             if (ProductResponse == null || !ProductResponse.Any())
             {
                 return NotFound(new { Message = "No Product data found" });
@@ -95,5 +97,39 @@ namespace microservice.product.API.Controllers
                            };
             return Ok(combined); 
         }
+
+        [HttpGet("GetProductByCustomerId/{id}")]
+        public async Task<IActionResult> GetProductByCustomerId(int id)
+        {
+            var CustomerData = await ProductCustomer.GetProductCustomerById(id);
+            var ProductData = await _unitOfWork.Product.GetById(id);
+
+            var combined = new
+                           {
+                                CustomerData.CustomerName,
+                                CustomerData.Address,
+                                CustomerData.Country,
+                                ProductData.ProductName,
+                                ProductData.ProductPrice,
+
+                           };
+            return Ok(combined);
+        }
+
+        [HttpGet("search")]
+        public async Task<IActionResult> SearchProducts([FromQuery] string? search = "")
+        {
+            var products = await _unitOfWork.Product.GetAll();
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                products = products.Where(product => product.ProductName.Contains(search, StringComparison.OrdinalIgnoreCase)
+                                            || product.ProductCompany.Contains(search, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+
+            return Ok(products);
+        }
+
+
     }
 }
