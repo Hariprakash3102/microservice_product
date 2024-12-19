@@ -2,7 +2,6 @@ using microservice.product.Application.Interface;
 using microservice.product.Application.Mapper;
 using microservice.product.Infrastructure.Data;
 using microservice.product.Infrastructure.Repository;
-using microservice.product.Infrastructure.Service;
 using microservice.product.Infrastructure.UnitOfWork;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -24,7 +23,7 @@ builder.Services.AddAutoMapper(typeof(ProductMapper));
 
 builder.Services.AddTransient(typeof(IGenericRepository<>), typeof(GenericRepositoy<>));
 
-builder.Services.AddScoped<IProductCustomerService, ProductCustomerService>();
+//builder.Services.AddScoped<IProductCustomerService, ProductCustomerService>();
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
@@ -38,6 +37,7 @@ builder.Services.AddAuthentication(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
     {
+        RoleClaimType = "role",
         ValidateIssuer = true,
         ValidateAudience = true,
         ValidateLifetime = true,
@@ -47,6 +47,12 @@ builder.Services.AddAuthentication(options =>
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
 
     };
+});
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminPolicy", policy => policy.RequireRole("Admin"));
+    options.AddPolicy("UserPolicy", policy => policy.RequireRole("User"));
 });
 
 builder.Services.AddControllers();

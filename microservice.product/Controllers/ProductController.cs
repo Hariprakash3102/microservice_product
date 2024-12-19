@@ -10,10 +10,10 @@ using System.Text.Json;
 
 namespace microservice.product.API.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [Route("api/[controller]")]
     [ApiController]
-    public class ProductController(IUnitOfWork _unitOfWork, IMapper mapper, IProductCustomerService ProductCustomer) : Controller
+    public class ProductController(IUnitOfWork _unitOfWork, IMapper mapper/*, IProductCustomerService ProductCustomer*/) : Controller
     {
 
         [HttpGet]
@@ -71,50 +71,50 @@ namespace microservice.product.API.Controllers
            return Ok();
         }
 
-        [HttpGet("GetByCustomer")]
-        public async Task<IActionResult> GetByCustomer()
-        {
-            var response = await ProductCustomer.GetProductCustomer();
-            if (response == null)
-            {
-                return NotFound(new { Message = "No customer data found." });
-            }
-            var ProductResponse = await _unitOfWork.Product.GetAll();
-            if (ProductResponse == null || !ProductResponse.Any())
-            {
-                return NotFound(new { Message = "No Product data found" });
-            }
+        //[HttpGet("GetByCustomer")]
+        //public async Task<IActionResult> GetByCustomer()
+        //{
+        //    var response = await ProductCustomer.GetProductCustomer();
+        //    if (response == null)
+        //    {
+        //        return NotFound(new { Message = "No customer data found." });
+        //    }
+        //    var ProductResponse = await _unitOfWork.Product.GetAll();
+        //    if (ProductResponse == null || !ProductResponse.Any())
+        //    {
+        //        return NotFound(new { Message = "No Product data found" });
+        //    }
 
-            var combined = from product in ProductResponse
-                           join customer in response on product.CustomerId equals customer.CustomerId
-                           select new
-                           {
-                               product.ProductName,
-                               product.ProductPrice,
-                               customer.CustomerName,
-                               customer.Address,
-                               customer.Country
-                           };
-            return Ok(combined); 
-        }
+        //    var combined = from product in ProductResponse
+        //                   join customer in response on product.CustomerId equals customer.CustomerId
+        //                   select new
+        //                   {
+        //                       product.ProductName,
+        //                       product.ProductPrice,
+        //                       customer.CustomerName,
+        //                       customer.Address,
+        //                       customer.Country
+        //                   };
+        //    return Ok(combined); 
+        //}
 
-        [HttpGet("GetProductByCustomerId/{id}")]
-        public async Task<IActionResult> GetProductByCustomerId(int id)
-        {
-            var CustomerData = await ProductCustomer.GetProductCustomerById(id);
-            var ProductData = await _unitOfWork.Product.GetById(id);
+        //[HttpGet("GetProductByCustomerId/{id}")]
+        //public async Task<IActionResult> GetProductByCustomerId(int id)
+        //{
+        //    var CustomerData = await ProductCustomer.GetProductCustomerById(id);
+        //    var ProductData = await _unitOfWork.Product.GetById(id);
 
-            var combined = new
-                           {
-                                CustomerData.CustomerName,
-                                CustomerData.Address,
-                                CustomerData.Country,
-                                ProductData.ProductName,
-                                ProductData.ProductPrice,
+        //    var combined = new
+        //                   {
+        //                        CustomerData.CustomerName,
+        //                        CustomerData.Address,
+        //                        CustomerData.Country,
+        //                        ProductData.ProductName,
+        //                        ProductData.ProductPrice,
 
-                           };
-            return Ok(combined);
-        }
+        //                   };
+        //    return Ok(combined);
+        //}
 
         [HttpGet("search")]
         public async Task<IActionResult> SearchProducts([FromQuery] string? search = "")
