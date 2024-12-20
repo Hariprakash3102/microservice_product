@@ -8,12 +8,16 @@ namespace microservice.product.Application.DTO
 {
     public class ProductDTO
     {
-        public string? productName { get; set; }
+        public string? ProductName { get; set; }
 
-        public string? productCompany { get; set; }
+        public string? ProductCompany { get; set; }
 
-        public decimal? productPrice { get; set; }
+        public decimal? ProductPrice { get; set; }
 
-        public int productDiscount { get; set; }
+        public decimal? ProductQuantity { get; set; }
+
+        public int ProductDiscount { get; set; }
+
+        public int CustomerId { get; set; }
     }
 }

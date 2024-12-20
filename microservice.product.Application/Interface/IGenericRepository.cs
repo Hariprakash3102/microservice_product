@@ -9,7 +9,7 @@ namespace microservice.product.Application.Interface
 
         Task Add (T entity);
 
-        Task Delete(int id);
+        void Delete(T entity);
 
         void Update(T entity);
 

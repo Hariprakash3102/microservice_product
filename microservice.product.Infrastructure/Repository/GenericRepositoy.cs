@@ -13,13 +13,9 @@ namespace microservice.product.Infrastructure.Repository
             await dbContext.Set<T>().AddAsync(entity);
         }
 
-        public async Task Delete(int id)
+        public void Delete(T entity)
         {
-          var entity = await GetById(id);
-          if(entity != null)
-            {
-                dbContext.Set<T>().Remove(entity);
-            }
+            dbContext.Set<T>().Remove(entity);
         }
 
         public async Task<IEnumerable<T>> GetAll()

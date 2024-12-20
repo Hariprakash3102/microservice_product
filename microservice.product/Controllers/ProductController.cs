@@ -1,5 +1,5 @@
-﻿using AutoMapper;
-using Azure;
+﻿using Azure;
+using Mapster;
 using microservice.product.Application.DTO;
 using microservice.product.Application.Interface;
 using microservice.product.domain.Model;
@@ -13,30 +13,53 @@ namespace microservice.product.API.Controllers
     [Authorize(Roles = "Admin")]
     [Route("api/[controller]")]
     [ApiController]
-    public class ProductController(IUnitOfWork _unitOfWork, IMapper mapper/*, IProductCustomerService ProductCustomer*/) : Controller
+    public class ProductController(IUnitOfWork _unitOfWork/*, IMapper mapper, IProductCustomerService ProductCustomer*/) : Controller
     {
 
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetProduct()
         {
-            var response = await _unitOfWork.Product.GetAll();
-            if (response == null)
-                return BadRequest();
+            try
+            {
+                var response = await _unitOfWork.Product.GetAll();
+                if (response == null)
+                    return NotFound();
 
-            else
-                return Ok(response);
+                else
+                    return Ok(response);
 
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            
         }
 
         [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public  async Task<IActionResult> GetProductById(int id)
         {
-            var entity = await _unitOfWork.Product.GetById(id);
-            if (entity == null)
-                return BadRequest();
+            try
+            {
+                var entity = await _unitOfWork.Product.GetById(id);
+                if (entity == null)
+                    return NotFound(new { Message = "User is not found." });
 
-            else
-                return Ok(entity);
+                else
+                    return Ok(entity);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+            
         }
 
         //[HttpGet("Get-Orders")]
@@ -46,29 +69,68 @@ namespace microservice.product.API.Controllers
         //}
 
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> AddProduct([FromBody] ProductDTO entity)
         {
-            var data = mapper.Map <ProductModel>(entity);
-            await _unitOfWork.Product.Add(data);
-            await _unitOfWork.Save();
-            return Ok(data);
+            //var product = mapper.Map <ProductModel>(entity);
+            try
+            {
+                var product = entity.Adapt<ProductModel>();
+                if (product == null)
+                {
+                    return NotFound(new { Message = "Products are null!!." });
+                }
+                await _unitOfWork.Product.Add(product);
+                await _unitOfWork.Save();
+                return Ok(product);
+            }
+            catch (Exception ex) { return BadRequest(ex.Message); }
+
+            
         }
 
         [HttpPut]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> EditProduct([FromBody] ProductModel entity)
         {
-            _unitOfWork.Product.Update(entity);
-            await _unitOfWork.Save();
-            return Ok(entity);
+            try
+            {
+                if (entity == null)
+                {
+                    return NotFound(new { Message = "Product are null!! So can't edit." });
+                }
+                _unitOfWork.Product.Update(entity);
+                await _unitOfWork.Save();
+                return Ok(entity);
+            }
+            catch (Exception ex) { return BadRequest(ex.Message) ; }
+           
         }
 
+
         [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
 
         public async Task<IActionResult> DeleteProduct(int id)
         {
-           await _unitOfWork.Product.Delete(id);
-           await _unitOfWork.Save();
-           return Ok();
+            try
+            {
+                var response = await _unitOfWork.Product.GetById(id);
+                if (response == null)
+                {
+                    return NotFound(new { Message = "Dlete the product is Failed by id not found" });
+                }
+                _unitOfWork.Product.Delete(response);
+                await _unitOfWork.Save();
+                return Ok();
+            }
+            catch (Exception ex) { return BadRequest(ex.Message); }
         }
 
         //[HttpGet("GetByCustomer")]
@@ -117,17 +179,34 @@ namespace microservice.product.API.Controllers
         //}
 
         [HttpGet("search")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> SearchProducts([FromQuery] string? search = "")
         {
-            var products = await _unitOfWork.Product.GetAll();
-
-            if (!string.IsNullOrEmpty(search))
+            try
             {
-                products = products.Where(product => product.ProductName.Contains(search, StringComparison.OrdinalIgnoreCase)
-                                            || product.ProductCompany.Contains(search, StringComparison.OrdinalIgnoreCase)).ToList();
-            }
+                var products = await _unitOfWork.Product.GetAll();
 
-            return Ok(products);
+                if(!products.Any() || products == null)
+                {
+                    return NotFound(new { message = " Search item is not Found "});
+                }
+                else
+                {
+                    if (!string.IsNullOrEmpty(search))
+                    {
+                        products = products.Where(product => product.ProductName!.Contains(search, StringComparison.OrdinalIgnoreCase)
+                                                    || product.ProductCompany!.Contains(search, StringComparison.OrdinalIgnoreCase)).ToList();
+                    }
+
+                    return Ok(products);
+                }
+            }
+            catch (Exception ex) { return BadRequest(ex.Message); }
+            
+
+            
         }
 
 
